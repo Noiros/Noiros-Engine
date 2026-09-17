@@ -16,7 +16,6 @@ L'objectif principal est de proposer un environnement de développement complet 
 Le moteur s'appuie sur des bibliothèques robustes et modernes :
 - **SDL3** : Pour la gestion des fenêtres, des entrées utilisateur et du cycle de vie de l'application.
 - **OpenGL** : API de rendu graphique pour la 2D et la 3D.
-- **ImGui** : Utilisé pour l'interface de l'éditeur (Editor) afin d'offrir des outils de débogage et de manipulation en temps réel.
 - **glad** : Chargeur de fonctions OpenGL 4.6 core.
 - **GLM (OpenGL Mathematics)** : Pour tous les calculs mathématiques liés à l'espace 2D et 3D.
 - **CMake** : Pour une gestion simple et multiplateforme de la compilation.
@@ -26,7 +25,7 @@ Le moteur s'appuie sur des bibliothèques robustes et modernes :
 - `main.cpp` : point d'entrée.
 - `engine/` : code du moteur.
 
-Toutes les dépendances (SDL3, glad, ImGui, GLM) sont récupérées automatiquement par CMake via `FetchContent` — pas de `thirdparty/`, pas de sous-modules.
+Toutes les dépendances (SDL3, glad, GLM) sont récupérées automatiquement par CMake via `FetchContent` — pas de `thirdparty/`, pas de sous-modules.
 
 ## ⚙️ Compilation
 

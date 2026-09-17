@@ -1,12 +1,7 @@
-#include "engine/Engine.h"
+#include "core/Engine.h"
 
-int main(int, char **) {
+int main(int argc, char* argv[]) {
     Engine engine;
-    if (!engine.init("Noiros Engine", 1280, 720)) {
-        engine.shutdown();
-        return 1;
-    }
-    engine.run();
-    engine.shutdown();
+    engine.Initialize();
     return 0;
 }

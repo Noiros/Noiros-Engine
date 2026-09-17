@@ -30,29 +30,15 @@ FetchContent_Declare(glad
         GIT_TAG v2.0.8 GIT_SHALLOW TRUE
         SOURCE_SUBDIR cmake)
 
-# ImGui ships no CMakeLists, so MakeAvailable only downloads it; target built below.
-FetchContent_Declare(imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.92.9b-docking GIT_SHALLOW TRUE)
-
-FetchContent_MakeAvailable(glm SDL3 glad imgui)
+FetchContent_MakeAvailable(glm SDL3 glad)
 
 glad_add_library(glad_gl_core_46 STATIC API gl:core=4.6)
 
-add_library(imgui STATIC
-        ${imgui_SOURCE_DIR}/imgui.cpp
-        ${imgui_SOURCE_DIR}/imgui_draw.cpp
-        ${imgui_SOURCE_DIR}/imgui_tables.cpp
-        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-        ${imgui_SOURCE_DIR}/imgui_demo.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
-target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
-target_link_libraries(imgui PUBLIC SDL3::SDL3)
-
-add_executable(Noiros main.cpp engine/Engine.cpp)
+add_executable(Noiros main.cpp core/Engine.cpp
+        core/Window.cpp
+        core/Window.h)
 target_include_directories(Noiros PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Noiros PRIVATE SDL3::SDL3 glad_gl_core_46 imgui glm::glm)
+target_link_libraries(Noiros PRIVATE SDL3::SDL3 glad_gl_core_46 glm::glm)
 
 # SDL3 is a shared lib: keep it next to the executable
 add_custom_command(TARGET Noiros POST_BUILD
