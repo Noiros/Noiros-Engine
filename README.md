@@ -1,4 +1,4 @@
-﻿# Custom Game Engine
+# Custom Game Engine
 
 Un moteur de jeu Open Source à but éducatif, conçu en C++ avec **SDL3** et **OpenGL**. Ce projet vise à fournir une base solide pour le développement de jeux 2D et 3D avec une séparation stricte entre l'éditeur et le runtime.
 
@@ -17,42 +17,31 @@ Le moteur s'appuie sur des bibliothèques robustes et modernes :
 - **SDL3** : Pour la gestion des fenêtres, des entrées utilisateur et du cycle de vie de l'application.
 - **OpenGL** : API de rendu graphique pour la 2D et la 3D.
 - **ImGui** : Utilisé pour l'interface de l'éditeur (Editor) afin d'offrir des outils de débogage et de manipulation en temps réel.
+- **glad** : Chargeur de fonctions OpenGL 4.6 core.
 - **GLM (OpenGL Mathematics)** : Pour tous les calculs mathématiques liés à l'espace 2D et 3D.
 - **CMake** : Pour une gestion simple et multiplateforme de la compilation.
 
-## 🏗 Architecture du Projet
+## 📂 Structure
 
-Le projet est divisé en trois cibles principales :
-1. **Engine (Shared Library)** : Le cœur du système (Core). Il contient le `SceneTree`, les `RenderingServers` (2D/3D), le système d'événements et la gestion des `GameObject` et `Components`.
-2. **Editor (Executable)** : L'application graphique permettant de manipuler le moteur, d'éditer les scènes et de prévisualiser les changements.
-3. **Runtime (Executable)** : L'exécutable minimaliste chargé de charger une scène et de la faire tourner sans la surcharge de l'éditeur.
+- `main.cpp` : point d'entrée.
+- `engine/` : code du moteur.
 
-## 📂 Structure des dossiers
-- `core/` : Code source du moteur (Engine).
-- `editor/` : Code source de l'éditeur.
-- `runtime/` : Code source du lanceur de jeu.
-- `thirdparty/` : Bibliothèques tierces (SDL, ImGui, GLM).
+Toutes les dépendances (SDL3, glad, ImGui, GLM) sont récupérées automatiquement par CMake via `FetchContent` — pas de `thirdparty/`, pas de sous-modules.
 
 ## ⚙️ Compilation
 
 ### Prérequis
 - Un compilateur supportant le **C++20**.
-- **CMake** version 3.20 ou supérieure.
+- **CMake** 3.24 ou supérieure.
+- **Python 3** (utilisé par glad pour générer le loader OpenGL ; CMake installe `jinja2` si besoin).
 
 ### Étapes
-1. Cloner le dépôt et ses sous-modules (si applicable) :
-   ```powershell
-   git clone https://github.com/[votre-utilisateur]/Custom-Game-Engine.git
-   cd Custom-Game-Engine
-   ```
-2. Générer les fichiers de build avec CMake :
-   ```powershell
-   cmake -B bin
-   ```
-3. Compiler le projet :
-   ```powershell
-   cmake --build bin
-   ```
+```powershell
+cmake -B build
+cmake --build build
+```
+
+L'exécutable est produit dans `build/bin/`.
 
 ## 📜 Licence
 

@@ -1,14 +1,20 @@
-﻿name: 🔗 GHA - Build Engine
-on: [push, pull_request, merge_group]
+name: Build Engine
+on: [push, pull_request]
 
 concurrency:
   group: ${{ github.workflow }}|${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  windows-editor:
-    name: Windows - Editor
-    uses: ./.github/workflows/build-editor.yml
-  windows-runtime:
-    name: Windows - Runtime
-    uses: ./.github/workflows/build-runtime.yml
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release -j 2

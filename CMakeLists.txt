@@ -1,53 +1,60 @@
-cmake_minimum_required(VERSION 3.20)
-project(GameEngine)
+cmake_minimum_required(VERSION 3.24)
+project(NoirosEngine LANGUAGES C CXX)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<CONFIGURATION>")
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-file(GLOB_RECURSE ENGINE_SOURCES
-        core/*.cpp
-        core/*.h
-)
-add_library(Engine SHARED ${ENGINE_SOURCES})
-target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)
-
-
-# GLM (disponible pour les cibles qui suivent)
 include(FetchContent)
-FetchContent_Declare(glm GIT_REPOSITORY https://github.com/g-truc/glm.git GIT_TAG 1.0.1)
-FetchContent_MakeAvailable(glm)
-target_link_libraries(Engine PUBLIC glm::glm)
 
-# SDL3 (sera lié à Engine)
-add_subdirectory(thirdparty/sdl EXCLUDE_FROM_ALL)
-target_link_libraries(Engine PUBLIC SDL3::SDL3)
+# glad generates the GL loader with Python at configure time; jinja2 is its only extra need.
+find_package(Python REQUIRED COMPONENTS Interpreter)
+execute_process(COMMAND ${Python_EXECUTABLE} -c "import jinja2" RESULT_VARIABLE HAVE_JINJA2
+        OUTPUT_QUIET ERROR_QUIET)
+if(NOT HAVE_JINJA2 EQUAL 0)
+    message(STATUS "Installing jinja2 for glad")
+    execute_process(COMMAND ${Python_EXECUTABLE} -m pip install --user jinja2
+            COMMAND_ERROR_IS_FATAL ANY)
+endif()
 
-# ImGui (sera lié à Engine)
-add_subdirectory(thirdparty/imgui)
-target_link_libraries(Engine PUBLIC ImGui::imgui)
+FetchContent_Declare(glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.3 GIT_SHALLOW TRUE)
 
-file(GLOB_RECURSE EDITOR_SOURCES
-        editor/modules/*.cpp
-        editor/modules/*.h
-        editor/interfaces/*.cpp
-        editor/interfaces/*.h
-)
-add_executable(Editor editor/main.cpp editor/Editor.cpp ${EDITOR_SOURCES})
-target_include_directories(Editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/editor)
-target_link_libraries(Editor PRIVATE Engine)
+FetchContent_Declare(SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.4.16 GIT_SHALLOW TRUE)
 
+FetchContent_Declare(glad
+        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+        GIT_TAG v2.0.8 GIT_SHALLOW TRUE
+        SOURCE_SUBDIR cmake)
 
-add_executable(Runtime runtime/main.cpp runtime/Runtime.cpp)
-target_include_directories(Runtime PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/runtime)
-target_link_libraries(Runtime PRIVATE Engine)
+# ImGui ships no CMakeLists, so MakeAvailable only downloads it; target built below.
+FetchContent_Declare(imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG v1.92.9b-docking GIT_SHALLOW TRUE)
 
-add_custom_command(TARGET Editor POST_BUILD
+FetchContent_MakeAvailable(glm SDL3 glad imgui)
+
+glad_add_library(glad_gl_core_46 STATIC API gl:core=4.6)
+
+add_library(imgui STATIC
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+        ${imgui_SOURCE_DIR}/imgui_demo.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+target_link_libraries(imgui PUBLIC SDL3::SDL3)
+
+add_executable(Noiros main.cpp engine/Engine.cpp)
+target_include_directories(Noiros PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(Noiros PRIVATE SDL3::SDL3 glad_gl_core_46 imgui glm::glm)
+
+# SDL3 is a shared lib: keep it next to the executable
+add_custom_command(TARGET Noiros POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:SDL3::SDL3>
-        $<TARGET_FILE_DIR:Editor>)
-
-add_custom_command(TARGET Runtime POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:SDL3::SDL3>
-        $<TARGET_FILE_DIR:Runtime>)
+        $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:Noiros>)
