@@ -8,8 +8,9 @@
 
 class InterfaceBase {
     public:
-    void Update();
-    void Render();
+    virtual ~InterfaceBase() = default;
+    virtual void Update() {}
+    virtual void Render() {}
 };
 
 

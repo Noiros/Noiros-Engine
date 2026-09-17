@@ -3,6 +3,11 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/bin/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/bin/_deps/sdl3-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/glad-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/imgui-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/sdl3-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/thirdparty/sdl" vcs="Git" />
   </component>
 </project>

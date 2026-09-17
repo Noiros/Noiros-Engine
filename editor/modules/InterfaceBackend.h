@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <algorithm>
+#include <vector>
 #include "Engine.h"
 #include "EventType.h"
 #include "interfaces/InterfaceBase.h"
